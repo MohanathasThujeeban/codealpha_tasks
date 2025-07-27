@@ -1,23 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:quotes_generator/views/home_page.dart';
+import 'package:flutter/services.dart';
+import 'theme/app_theme.dart';
+import 'screens/home_screen.dart';
 
+void main() {
+  runApp(const QuoteGeneratorApp());
+}
 
-void main() => runApp(MyApp());
+class QuoteGeneratorApp extends StatelessWidget {
+  const QuoteGeneratorApp({Key? key}) : super(key: key);
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Quote Generator',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        primarySwatch: Colors.blue,
+    // Set system UI overlay style
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: Color(0xFF121212),
+        systemNavigationBarIconBrightness: Brightness.light,
       ),
-      home: HomePage(),
+    );
+
+    return MaterialApp(
+      title: 'Daily Quotes - Beautiful Quote Generator',
       debugShowCheckedModeBanner: false,
+      theme: AppTheme.darkTheme,
+      home: const HomeScreen(),
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: const TextScaler.linear(1.0)),
+          child: child!,
+        );
+      },
     );
   }
 }
