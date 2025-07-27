@@ -3,14 +3,15 @@ import 'package:quotes_generator/quote.dart';
 import 'package:quotes_generator/quote_provider.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
-  _HomePageState createState() => _HomePageState();
+  @override
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  Future<Quote> _quote;
-  QuoteProvider _provider = QuoteProvider.instance;
+class HomePageState extends State<HomePage> {
+  late Future<Quote?> _quote;
+  final QuoteProvider _provider = QuoteProvider.instance;
 
   @override
   void initState() {
@@ -21,27 +22,27 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: FutureBuilder<Quote>(
+        child: FutureBuilder<Quote?>(
           future: _quote,
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
+            if (snapshot.hasData && snapshot.data != null) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    snapshot.data.text,
-                    style: Theme.of(context).textTheme.display1,
+                    snapshot.data!.text,
+                    style: Theme.of(context).textTheme.headlineMedium,
                     textAlign: TextAlign.center,
                   ),
                   Container(
                     padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
                     child: Visibility(
-                      visible: snapshot.data.author != null,
+                      visible: snapshot.data!.author.isNotEmpty,
                       child: Text(
-                        snapshot.data.author,
+                        snapshot.data!.author,
                         style: TextStyle(color: Colors.green),
                         textAlign: TextAlign.center,
                       ),
@@ -49,23 +50,21 @@ class _HomePageState extends State<HomePage> {
                   ),
                   Container(
                     padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                    child: Container(
-                      child: Ink(
-                        decoration: ShapeDecoration(
-                          color: Colors.white,
-                          shape: CircleBorder(),
-                        ),
-                        child: IconButton(
-                          icon: Icon(Icons.navigate_next),
-                          iconSize: 36.0,
-                          color: Colors.black87,
-                          tooltip: 'Next Quote',
-                          onPressed: () {
-                            setState(() {
-                              _quote = _provider.getRandomQuote();
-                            });
-                          },
-                        ),
+                    child: Ink(
+                      decoration: ShapeDecoration(
+                        color: Colors.white,
+                        shape: CircleBorder(),
+                      ),
+                      child: IconButton(
+                        icon: Icon(Icons.navigate_next),
+                        iconSize: 36.0,
+                        color: Colors.black87,
+                        tooltip: 'Next Quote',
+                        onPressed: () {
+                          setState(() {
+                            _quote = _provider.getRandomQuote();
+                          });
+                        },
                       ),
                     ),
                   )

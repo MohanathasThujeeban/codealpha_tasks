@@ -6,15 +6,15 @@ import 'package:quotes_generator/quote.dart';
 import 'package:sqflite/sqflite.dart';
 
 class QuoteProvider {
-  static Database _db;
+  static Database? _db;
   final String _dbName = 'quotes.db';
-  static Random rnd = new Random();
+  static Random rnd = Random();
 
   QuoteProvider._privateConstructor();
   static final QuoteProvider instance = QuoteProvider._privateConstructor();
 
   Future<Database> get database async {
-    if (_db != null) return _db;
+    if (_db != null) return _db!;
 
     var databasesPath = await getDatabasesPath();
     var path = join(databasesPath, _dbName);
@@ -22,20 +22,22 @@ class QuoteProvider {
     ByteData data = await rootBundle.load(join("assets", _dbName));
     List<int> bytes =
         data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-    await new File(path).writeAsBytes(bytes);
+    await File(path).writeAsBytes(bytes);
 
-    return await openDatabase(path);
+    _db = await openDatabase(path);
+    return _db!;
   }
 
-  Future<Quote> getRandomQuote() async {
+  Future<Quote?> getRandomQuote() async {
     return await getQuote(rnd.nextInt(1642) + 1);
   }
 
-  Future<Quote> getQuote(int id) async {
+  Future<Quote?> getQuote(int id) async {
     Database db = await database;
-    List<Map> maps = await db.rawQuery("select * from quotes where id=$id");
+    List<Map<String, dynamic>> maps =
+        await db.rawQuery("select * from quotes where id=$id");
 
-    if (maps.length > 0) {
+    if (maps.isNotEmpty) {
       return Quote.fromMap(maps.first);
     }
     return null;
